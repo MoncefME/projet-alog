@@ -1,5 +1,9 @@
 "use client";
 import { useState } from "react";
+
+import { useRouter } from "next/navigation";
+import { createDocument } from "@/actions/documents";
+
 import {
   Dialog,
   DialogClose,
@@ -14,8 +18,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PlusIcon } from "lucide-react";
-import { createDocument } from "@/actions/documents/documentLib";
-import { useRouter } from "next/navigation";
 
 const AddDocButton = () => {
   const router = useRouter();

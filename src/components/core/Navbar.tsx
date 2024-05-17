@@ -19,7 +19,7 @@ const Navbar = async () => {
   }
 
   return (
-    <nav className="flex h-20 w-full items-center justify-between bg-blue-200 px-20 py-2">
+    <nav className="flex h-20 w-full items-center justify-between border-b-2 border-b-slate-500 bg-slate-900 px-20 py-2  text-white">
       <div className="flex items-center space-x-4">
         <Image src="/logo.png" alt="Terra App" width={40} height={40} />
         <p className="text-2xl font-bold">Terra App</p>

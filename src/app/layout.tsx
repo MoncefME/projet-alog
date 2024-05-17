@@ -1,8 +1,13 @@
+import { cn } from "@/lib/utils";
 import "../globals.css";
-
+import { Poppins } from "next/font/google";
 export const metadata = {
   title: "Terra App",
 };
+const font = Poppins({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+});
 
 export default function RootLayout({
   children,
@@ -25,7 +30,7 @@ export default function RootLayout({
           type="image/png"
         />
       </head>
-      <body>{children}</body>
+      <body className={font.className}>{children}</body>
     </html>
   );
 }
