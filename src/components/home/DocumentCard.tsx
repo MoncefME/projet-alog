@@ -5,23 +5,23 @@ import Link from "next/link";
 import { deleteDocument } from "@/actions/documents";
 import { formatDateAndTime } from "@/utils/format-date";
 
-import { EditIcon, LucideStar, Trash, UsersRound } from "lucide-react";
+import {
+  Clock,
+  Heart,
+  LucideStar,
+  MoveLeft,
+  MoveRightIcon,
+} from "lucide-react";
 import { Button } from "../ui/button";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import DeleteDocDialog from "./CardActions/DeleteDocDialog";
+import UpdateDocDialog from "./CardActions/UpdateDocDialog";
+import CollaboratorsDialog from "./CardActions/CollaboratorsDialog";
+import { useState } from "react";
 
 const DocumentCard = ({ doc }: any) => {
   const router = useRouter();
+  const [liked, setLiked] = useState(false);
 
   const handleDocumentDelete = async () => {
     await deleteDocument(doc.documentId);
@@ -29,6 +29,12 @@ const DocumentCard = ({ doc }: any) => {
   };
 
   const handleDocumentLike = async () => {
+    setLiked(!liked);
+    // await likeDocument(doc.documentId);
+    router.refresh();
+  };
+
+  const handleDocumentEdit = async () => {
     // await likeDocument(doc.documentId);
     // router.refresh();
   };
@@ -36,62 +42,41 @@ const DocumentCard = ({ doc }: any) => {
   return (
     <div
       key={doc.documentId}
-      className="col-span-1 flex h-44 flex-col justify-end  rounded-md border-2 border-slate-700 bg-slate-100 p-0 hover:border-slate-800 hover:bg-white"
+      className="col-span-1 flex h-44 flex-col justify-end truncate  rounded-md border-2 border-slate-700 bg-slate-100 p-0 hover:border-slate-800 hover:bg-white"
     >
       <Link
         href={`/editor?exampleId=${doc.documentId}`}
-        className="px-2 text-xl"
+        className="px-1 text-xl"
       >
-        <p>{doc.title}</p>
+        <p className="group flex items-center truncate text-wrap transition-all duration-300 hover:pl-1">
+          <MoveRightIcon
+            size={20}
+            className="hidden transition-all duration-300 group-hover:inline-block"
+          />
+          <span className="ml-1 transform truncate transition-all duration-300 group-hover:translate-x-1">
+            {doc.title}
+          </span>
+        </p>
       </Link>
-      <p className="p-2 pt-0 align-bottom text-sm text-gray-500">
-        Created : {formatDateAndTime(doc.createdAt)}
-      </p>
+      <div className="flex items-center gap-1 p-2 pt-0 align-bottom text-xs text-gray-500">
+        <Clock size={12} />
+        <p>Created : {formatDateAndTime(doc.createdAt)}</p>
+      </div>
       <div className="flex w-full items-center justify-around rounded-b-md rounded-t-none border-t-2 border-slate-700 bg-slate-300 p-2">
-        <AlertDialog>
-          <AlertDialogTrigger>
-            <Button
-              variant="destructive"
-              className=" right-2 top-2 flex size-8 items-center justify-center p-0"
-            >
-              <Trash size={20} />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Document</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the
-                document.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDocumentDelete}>
-                Continue
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <DeleteDocDialog onDelete={handleDocumentDelete} />
 
         <Button
           variant="outline"
           className="flex size-8 items-center justify-center p-0 "
+          onClick={handleDocumentLike}
         >
-          <LucideStar size={20} />
+          {liked ? <Heart size={20} fill="red" /> : <Heart size={20} />}
         </Button>
-        <Button
-          variant="outline"
-          className="flex size-8 items-center justify-center p-0"
-        >
-          <EditIcon size={20} />
-        </Button>
-        <Button
-          variant="outline"
-          className="flex size-8 items-center justify-center p-0"
-        >
-          <UsersRound size={20} />
-        </Button>
+        <UpdateDocDialog
+          onUpdate={handleDocumentEdit}
+          current_title={doc.title}
+        />
+        <CollaboratorsDialog onUpdate={handleDocumentEdit} />
       </div>
     </div>
   );

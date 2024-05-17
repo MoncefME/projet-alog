@@ -32,19 +32,18 @@ const AddDocButton = () => {
     console.log(created_doc);
     router.refresh();
     setLoading(false);
-    setIsDialogOpen(false); // Close the dialog
+    setIsDialogOpen(false);
   };
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         <Button
-          className="col-span-1 flex h-44 flex-col items-center justify-center gap-2"
-          variant="default"
+          className="col-span-1 flex h-44 flex-col items-center justify-center gap-2 bg-gradient-to-tr from-slate-900 via-slate-700 to-slate-700"
           onClick={() => setIsDialogOpen(true)}
         >
-          <p>Add document</p>
-          <PlusIcon size={40} />
+          <p className="text-lg font-bold">Add document</p>
+          <PlusIcon size={50} />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">

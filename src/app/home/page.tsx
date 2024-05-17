@@ -13,7 +13,6 @@ const HomePage = async () => {
         <div className="flex w-full items-center gap-2 text-left text-xl font-semibold">
           <FolderDot /> <span>My documents</span>
         </div>
-        {/* <Input id="search" placeholder="Search" /> */}
       </div>
 
       <div className="grid w-full grid-cols-4 gap-4 ">

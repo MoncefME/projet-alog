@@ -127,7 +127,7 @@ const ProfileForm = ({ user }: { user: User | null }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Avatar className="size-12">
+        <Avatar className="size-12 cursor-pointer">
           <AvatarImage src="https://avatars.githubusercontent.com/MoncefME" />
           <AvatarFallback>MM</AvatarFallback>
         </Avatar>
@@ -146,7 +146,7 @@ const ProfileForm = ({ user }: { user: User | null }) => {
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input placeholder="Full Name" {...field} />
                   </FormControl>
                   <FormDescription>
                     This is your public display name.
