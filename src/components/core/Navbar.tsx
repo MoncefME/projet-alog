@@ -15,10 +15,8 @@ const Navbar = async () => {
     error,
   } = await supabase.auth.getUser();
   if (error || !user) {
-    console.error("User not found");
+    redirect("/login");
   }
-
-  console.log(user);
 
   return (
     <nav className="flex h-20 w-full items-center justify-between bg-blue-200 px-20 py-2">
@@ -28,12 +26,16 @@ const Navbar = async () => {
       </div>
       <div className="flex items-center space-x-4">
         {user ? (
-          <Button variant="destructive">
-            <Link href="/logout" className="flex items-center gap-4 text-base">
+          <form action="/api/auth/signout" method="POST">
+            <Button
+              variant="destructive"
+              type="submit"
+              className="flex items-center gap-4 text-base"
+            >
               Logout
               <LogOut />
-            </Link>
-          </Button>
+            </Button>
+          </form>
         ) : (
           <Button variant="default">
             <Link href="/login" className="flex items-center gap-4 text-base">

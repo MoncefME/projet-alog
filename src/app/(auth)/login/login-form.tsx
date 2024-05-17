@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { login } from "@/actions/auth/login";
+import { useState } from "react";
 
 const formSchema = z.object({
   email: z.string().regex(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/, {
@@ -25,6 +26,8 @@ const formSchema = z.object({
 });
 
 const LoginForm = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -34,11 +37,15 @@ const LoginForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
     const { email, password } = values;
     const loginResponse = await login({ email, password });
-    console.log(loginResponse);
+    setIsSubmitting(false);
 
-    console.log(values);
+    if (loginResponse?.message) {
+      setLoginError(loginResponse?.message);
+      return;
+    }
   }
 
   return (
@@ -77,8 +84,11 @@ const LoginForm = () => {
           )}
         />
         {/* Submit Button */}
-        <Button type="submit">Submit</Button>
-        <FormMessage />
+        <Button type="submit">{isSubmitting ? "Loading..." : "Login"}</Button>
+        {/* Login Errors */}
+        {loginError && (
+          <div className="text-sm font-semibold text-red-500">{loginError}</div>
+        )}
       </form>
     </Form>
   );

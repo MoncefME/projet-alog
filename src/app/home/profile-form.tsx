@@ -35,6 +35,23 @@ const formSchema = z.object({
 });
 
 const ProfileForm = ({ user }: { user: User | null }) => {
+  const fetchUser = async () => {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("profiles")
+      .select()
+      .eq("id", user?.id)
+      .single();
+    if (error) {
+      console.log(error);
+      return;
+    }
+    console.log("user fetched data", data);
+  };
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [fullname, setFullname] = useState<string | null>(null);
@@ -50,7 +67,7 @@ const ProfileForm = ({ user }: { user: User | null }) => {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     const { full_name, avatar_link } = values;
-    updateProfile({ full_name, avatar_url: avatar_link ?? null });
+    updateProfile({ full_name: fullname, avatar_url: avatar_link ?? null });
   }
 
   const getProfile = useCallback(async () => {

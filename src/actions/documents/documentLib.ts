@@ -4,7 +4,6 @@ import { createClient } from "@/utils/supabase/server";
 
 interface DocumentData {
   title: string;
-  userId: string;
 }
 
 const createDocument = async ({ title }: DocumentData) => {
@@ -18,8 +17,38 @@ const createDocument = async ({ title }: DocumentData) => {
 
   const { data, error } = await supabase.from("documents").insert({
     title,
-    userId: user.data.user?.id,
+    owner_id: user.data.user?.id,
   });
+
+  if (error) {
+    throw new Error("Error creating document.");
+    return;
+  }
+
+  return data;
+};
+
+const checkAccess = async (
+  userId: string,
+  documentId: string
+): Promise<Boolean> => {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from("user_docs")
+    .select("*")
+    .eq("document_id", documentId)
+    .eq("user_id", userId);
+
+  if (error) {
+    throw new Error("Error fetching document.");
+  }
+
+  if (!data) {
+    throw new Error("Document not found.");
+  }
+
+  return data.length > 0;
 };
 
 const getUsersDocuments = async () => {
@@ -34,58 +63,24 @@ const getUsersDocuments = async () => {
   const { data, error } = await supabase
     .from("documents")
     .select("*")
-    .eq("userId", user.data.user?.id);
+    .eq("owner_id", user.data.user?.id);
 
-  return [
-    {
-      documentId: "1",
-      title: "Document 1",
-      createdAt: "2022-10-10",
-      updatedAt: "2022-10-10",
-    },
-    {
-      documentId: "2",
-      title: "Document 2",
-      createdAt: "2022-10-10",
-      updatedAt: "2022-10-10",
-    },
-    {
-      documentId: "3",
-      title: "Document 3",
-      createdAt: "2022-10-10",
-      updatedAt: "2022-10-10",
-    },
-    {
-      documentId: "4",
-      title: "Document 4",
-      createdAt: "2022-10-10",
-      updatedAt: "2022-10-10",
-    },
-    {
-      documentId: "6",
-      title: "Document 3",
-      createdAt: "2022-10-10",
-      updatedAt: "2022-10-10",
-    },
-    {
-      documentId: "8",
-      title: "Document 4",
-      createdAt: "2022-10-10",
-      updatedAt: "2022-10-10",
-    },
-    {
-      documentId: "11",
-      title: "Document 3",
-      createdAt: "2022-10-10",
-      updatedAt: "2022-10-10",
-    },
-    {
-      documentId: "10",
-      title: "Document 4",
-      createdAt: "2022-10-10",
-      updatedAt: "2022-10-10",
-    },
-  ];
+  if (error) {
+    return [];
+  }
+
+  if (!data) {
+    return [];
+  }
+
+  return data.map((doc) => {
+    return {
+      documentId: doc.id,
+      title: doc.title,
+      createdAt: doc.created_at,
+      updatedAt: doc.updated_at,
+    };
+  });
 };
 
 const deleteDocument = async (id: string) => {
@@ -96,7 +91,11 @@ const deleteDocument = async (id: string) => {
     .delete()
     .eq("id", id);
 
+  if (error) {
+    throw new Error("Error deleting document.");
+  }
+
   return data;
 };
 
-export { createDocument, getUsersDocuments, deleteDocument };
+export { createDocument, getUsersDocuments, deleteDocument, checkAccess };

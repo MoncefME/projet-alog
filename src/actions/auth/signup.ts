@@ -26,16 +26,22 @@ export async function signup({ email, password, full_name }: SignupFormData) {
     redirect("/error");
   }
 
+  console.log("data->", data);
   if (data) {
-    const { error } = await supabase.from("profiles").insert({
+    const { error, data: dda } = await supabase.from("profiles").insert({
       id: data.user?.id,
       full_name,
       email,
+      updated_at: new Date(),
     });
 
     if (error) {
       console.log(error);
+    } else {
+      console.log("data->", dda);
     }
+  } else {
+    console.log("No data found");
   }
 
   revalidatePath("/", "layout");
