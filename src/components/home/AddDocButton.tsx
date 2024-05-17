@@ -39,11 +39,14 @@ const AddDocButton = () => {
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         <Button
-          className="col-span-1 flex h-44 flex-col items-center justify-center gap-2 bg-gradient-to-tr from-slate-900 via-slate-700 to-slate-700"
+          className="group col-span-1 flex h-44 flex-col items-center justify-center gap-2 bg-gradient-to-tr from-slate-900 via-slate-700 to-slate-700"
           onClick={() => setIsDialogOpen(true)}
         >
           <p className="text-lg font-bold">Add document</p>
-          <PlusIcon size={50} />
+          <PlusIcon
+            size={50}
+            className="transition-all duration-300 ease-in-out group-hover:scale-x-110"
+          />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -55,25 +58,24 @@ const AddDocButton = () => {
         </DialogHeader>
         <div className="flex items-center space-x-2">
           <div className="grid flex-1 gap-2">
-            <Label htmlFor="link" className="sr-only">
-              Link
-            </Label>
             <Input
-              id="link"
+              id="docTitle"
               value={docTitle || ""}
               onChange={(e) => setDocTitle(e.target.value)}
             />
           </div>
         </div>
-        <DialogFooter className="sm:justify-start">
-          <Button type="submit" onClick={() => handleCreateDoc()}>
-            {loading ? "Creating Document..." : "Create"}
-          </Button>
-          <DialogClose asChild>
-            <Button type="button" variant="secondary">
-              Close
+        <DialogFooter>
+          <div className="flex w-full justify-between space-x-4">
+            <DialogClose asChild>
+              <Button type="button" variant="secondary">
+                Close
+              </Button>
+            </DialogClose>
+            <Button type="submit" onClick={() => handleCreateDoc()}>
+              {loading ? "Creating Document..." : "Create"}
             </Button>
-          </DialogClose>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

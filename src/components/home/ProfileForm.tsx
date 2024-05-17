@@ -1,4 +1,6 @@
 "use client";
+import { useCallback, useEffect, useState } from "react";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +13,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { type User } from "@supabase/supabase-js";
 
@@ -35,8 +36,8 @@ const formSchema = z.object({
 });
 
 const ProfileForm = ({ user }: { user: User | null }) => {
+  const supabase = createClient();
   const fetchUser = async () => {
-    const supabase = createClient();
     const { data, error } = await supabase
       .from("profiles")
       .select()
@@ -52,7 +53,6 @@ const ProfileForm = ({ user }: { user: User | null }) => {
     fetchUser();
   }, []);
 
-  const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [fullname, setFullname] = useState<string | null>(null);
   const [avatar_url, setAvatarUrl] = useState<string | null>(null);
