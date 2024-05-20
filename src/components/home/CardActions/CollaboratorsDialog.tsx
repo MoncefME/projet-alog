@@ -21,7 +21,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Crown, Trash, UserCog, UsersRound } from "lucide-react";
+import { Crown, Trash, UserCog, UserPlus, UsersRound } from "lucide-react";
+import { DialogDescription } from "@radix-ui/react-dialog";
+import { useEffect, useState } from "react";
+import { getUsersDocuments } from "@/actions/documents";
+import { getDocCollaborator } from "@/actions/collaborators";
 
 interface UpdateDocDialogProps {
   onUpdate: () => void;
@@ -32,12 +36,26 @@ const formSchema = z.object({
 });
 
 const CollaboratorsDialog = ({ onUpdate }: UpdateDocDialogProps) => {
-  const Collaborators = Array.from({ length: 20 }, (_, i) => ({
-    id: i + 1,
-    username: "Moncef",
-    email: "moncef@gmail.com",
-    role: i === 0 ? "Owner" : "Collaborator",
-  }));
+  const [collaborators, setCollaborators] = useState<any>([]);
+
+  const fetchCollaborators = async () => {
+    const collaborators = await getDocCollaborator({
+      document_id: "1dd220df-6609-496a-a10b-15194866ffbd",
+    });
+    console.log(collaborators, "0000");
+    setCollaborators(collaborators);
+  };
+  useEffect(() => {
+    fetchCollaborators();
+    console.log("collaborators", collaborators);
+  }, []);
+
+  // const Collaborators = Array.from({ length: 20 }, (_, i) => ({
+  //   id: i + 1,
+  //   username: "Moncef",
+  //   email: "moncef@gmail.com",
+  //   role: i === 0 ? "Owner" : "Collaborator",
+  // }));
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,26 +79,39 @@ const CollaboratorsDialog = ({ onUpdate }: UpdateDocDialogProps) => {
             <UsersRound />
             <p>Add Collaborators</p>
           </DialogTitle>
+          <DialogDescription>
+            Enter the email of the user you want to add as a collaborator.
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onUpdate)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onUpdate)}>
             <FormField
               control={form.control}
               name="document_title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Full Name" {...field} />
-                  </FormControl>
+                  <FormLabel>Email</FormLabel>
                   <FormMessage />
+
+                  <div className="flex  items-center gap-2">
+                    <FormControl>
+                      <Input
+                        placeholder="collab@email.com"
+                        {...field}
+                        type="email"
+                      />
+                    </FormControl>
+                    <Button type="submit" variant="default">
+                      <UserPlus />
+                    </Button>
+                  </div>
                 </FormItem>
               )}
             />
           </form>
         </Form>
         <div className="no-scrollbar flex h-44 w-full snap-y snap-mandatory flex-col gap-2 overflow-y-scroll">
-          {Collaborators.map((collaborator, index) => (
+          {collaborators.map((collaborator: any, index: any) => (
             <div
               key={index}
               className="grid w-full snap-start grid-cols-6 items-center rounded-sm border-slate-500 bg-slate-100 px-4 py-2"

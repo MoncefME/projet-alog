@@ -7,7 +7,7 @@ const Footer = () => {
       <p>&copy; Terra App</p>
       <p className="flex items-center gap-2">
         Projet ALOG SIL1 2023-2024
-        <Link href="https://github.com/MoncefME">
+        <Link href="https://github.com/MoncefME/projet-alog">
           <Github size={20} />
         </Link>
       </p>

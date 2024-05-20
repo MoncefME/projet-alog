@@ -29,6 +29,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import AratarPicture from "./AvatarPicture";
 
 const formSchema = z.object({
   full_name: z.string().min(2).max(50),
@@ -124,11 +125,14 @@ const ProfileForm = ({ user }: { user: User | null }) => {
       setLoading(false);
     }
   };
+  console.log("avatar_url", avatar_url);
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Avatar className="size-12 cursor-pointer">
-          <AvatarImage src="https://avatars.githubusercontent.com/MoncefME" />
+          <AvatarImage
+            src={"https://avatars.githubusercontent.com/mrdbourke"}
+          />
           <AvatarFallback>MM</AvatarFallback>
         </Avatar>
       </DialogTrigger>
@@ -138,6 +142,17 @@ const ProfileForm = ({ user }: { user: User | null }) => {
           <DialogDescription>Update your profile information</DialogDescription>
         </DialogHeader>
         <Form {...form}>
+          <div className="flex w-full justify-between space-x-4 bg-yellow-100">
+            <AratarPicture
+              uid={user?.id ?? null}
+              url={avatar_url}
+              size={150}
+              onUpload={(url) => {
+                setAvatarUrl(url);
+                updateProfile({ full_name: fullname, avatar_url: url });
+              }}
+            />
+          </div>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}

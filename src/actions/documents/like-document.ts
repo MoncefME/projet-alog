@@ -3,10 +3,10 @@
 import { createClient } from "@/utils/supabase/server";
 
 interface DocumentData {
-  title: string;
+  document_id: string;
 }
 
-const likeDocument = async ({ title }: DocumentData) => {
+const likeDocument = async ({ document_id }: DocumentData) => {
   const supabase = createClient();
 
   const user = await supabase.auth.getUser();
@@ -16,12 +16,12 @@ const likeDocument = async ({ title }: DocumentData) => {
   }
 
   const { data, error } = await supabase
-    .from("documents")
+    .from("use_docs")
     .update({
-      title,
-      owner_id: user.data.user?.id,
+      liked: true,
     })
-    .eq("id", user.data.user?.id);
+    .eq("document_id", document_id)
+    .eq("user_id", user.data.user?.id);
 
   if (error) {
     throw new Error("Error creating document.");

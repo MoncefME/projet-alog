@@ -34,12 +34,12 @@ const WelcomeScreen = () => {
         width={100}
         height={100}
         alt="logo"
-        className="delay-show duration-2000 opacity-0 transition-opacity ease-in-out"
+        className="delay-show opacity-0 transition-opacity duration-2000 ease-in-out"
       />
       <TypewriterEffectSmooth words={words} />
       <Link
         href="/login"
-        className="delay-show duration-2000 w-1/4 rounded-md  border-2 border-blue-700 bg-blue-500 px-4 py-2 text-center text-2xl font-semibold text-white opacity-0 transition-opacity ease-in-out hover:bg-blue-600"
+        className="delay-show w-1/4 rounded-md border-2  border-blue-700 bg-blue-500 px-4 py-2 text-center text-2xl font-semibold text-white opacity-0 transition-opacity duration-2000 ease-in-out hover:bg-blue-600"
       >
         Login
       </Link>
