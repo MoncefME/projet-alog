@@ -19,7 +19,7 @@ const HomePage = async () => {
         <AddDocButton />
         {user_documents &&
           user_documents.map((doc) => (
-            <DocumentCard key={doc.documentId} doc={doc} />
+            <DocumentCard key={doc.document_id} doc={doc} />
           ))}
       </div>
     </div>

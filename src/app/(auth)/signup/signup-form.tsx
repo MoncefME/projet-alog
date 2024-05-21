@@ -53,6 +53,7 @@ const SignupForm = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { email, password, fullName } = values;
+    console.log("----->values", values);
     await signup({ email, password, full_name: fullName });
     console.log(values);
   }

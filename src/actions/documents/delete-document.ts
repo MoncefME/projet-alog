@@ -11,7 +11,7 @@ const deleteDocument = async (id: string) => {
     .eq("id", id);
 
   if (error) {
-    throw new Error("Error deleting document.");
+    console.error(error);
   }
 
   return data;

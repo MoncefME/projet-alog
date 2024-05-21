@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { QueryData } from "@supabase/supabase-js";
 
 const getUsersDocuments = async () => {
   const supabase = createClient();
@@ -11,24 +12,33 @@ const getUsersDocuments = async () => {
   }
 
   const { data, error } = await supabase
-    .from("documents")
-    .select("*")
-    .eq("owner_id", user.data.user?.id);
+    .from("user_docs")
+    .select(
+      `
+    document_id,
+    user_id,
+    liked,
+    owner,
+    ...documents (
+      id,
+      created_at,
+      title
+    )
+  `
+    )
+    .eq("user_id", user.data.user?.id);
 
   if (error) {
-    return [];
+    throw error;
   }
-
-  if (!data) {
-    return [];
-  }
-
   return data.map((doc) => {
     return {
-      documentId: doc.id,
+      document_id: doc.document_id,
+      user_id: doc.user_id,
+      liked: doc.liked,
+      owner: doc.owner,
+      created_at: doc.created_at,
       title: doc.title,
-      createdAt: doc.created_at,
-      updatedAt: doc.updated_at,
     };
   });
 };

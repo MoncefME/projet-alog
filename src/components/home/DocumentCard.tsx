@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-import { deleteDocument } from "@/actions/documents";
+import { deleteDocument, likeDocument } from "@/actions/documents";
 import { formatDateAndTime } from "@/utils/format-date";
 
 import {
@@ -21,16 +21,15 @@ import { useState } from "react";
 
 const DocumentCard = ({ doc }: any) => {
   const router = useRouter();
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(doc.liked);
 
   const handleDocumentDelete = async () => {
-    await deleteDocument(doc.documentId);
+    await deleteDocument(doc.document_id);
     router.refresh();
   };
 
   const handleDocumentLike = async () => {
-    setLiked(!liked);
-    // await likeDocument(doc.documentId);
+    await likeDocument(doc.document_id);
     router.refresh();
   };
 
@@ -45,7 +44,7 @@ const DocumentCard = ({ doc }: any) => {
       className="col-span-1 flex h-44 flex-col justify-end truncate  rounded-md border-2 border-slate-700 bg-slate-100 p-0 hover:border-slate-800 hover:bg-white"
     >
       <Link
-        href={`/editor?exampleId=${doc.documentId}`}
+        href={`/editor?exampleId=${doc.document_id}`}
         className="px-1 text-xl"
       >
         <p className="group flex items-center truncate text-wrap transition-all duration-300 hover:pl-1">
@@ -60,7 +59,7 @@ const DocumentCard = ({ doc }: any) => {
       </Link>
       <div className="flex items-center gap-1 p-2 pt-0 align-bottom text-xs text-gray-500">
         <Clock size={12} />
-        <p>Created : {formatDateAndTime(doc.createdAt)}</p>
+        <p>Created : {formatDateAndTime(doc.created_at)}</p>
       </div>
       <div className="flex w-full items-center justify-around rounded-b-md rounded-t-none border-t-2 border-slate-700 bg-slate-300 p-2">
         <DeleteDocDialog onDelete={handleDocumentDelete} />

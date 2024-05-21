@@ -15,36 +15,35 @@ const getDocCollaborator = async ({ document_id }: DocumentData) => {
     throw new Error("User not found.");
   }
 
-  const { data, error: errorUserDocs }: { data: any; error: any } =
-    await supabase
-      .from("user_docs")
-      .select(
-        `
-      user_id,
-      profiles (
-        id,
-        full_name,
-        email
-      )
-    `
-      )
-      .eq("document_id", document_id);
+  const { data: collaborators, error: error_collaborators } = await supabase
+    .from("user_docs")
+    .select(
+      `
+    user_id,
+    liked,
+    owner,
+    documents (
+      id,
+      created_at,
+      title
+    )
+  `
+    )
+    .eq("document_id", document_id);
 
-  if (errorUserDocs) {
-    console.error(errorUserDocs);
-    throw new Error("Error retrieving document collaborators.");
+  if (error_collaborators) {
+    throw new Error("Error getting collaborators.");
   }
 
-  console.log(data[0].profiles, "-a-a-aa-");
-
-  const collaborators = data.map((doc: any) => ({
-    id: doc.user_id,
-    username: doc.profiles.full_name,
-    email: doc.profiles.email,
-    role: doc.user_id === user.user.id ? "Owner" : "Collaborator",
-  }));
-
-  return collaborators;
+  return collaborators.map((collaborator) => {
+    return {
+      documentId: collaborator.documents?.id,
+      title: collaborator.documents?.title,
+      createdAt: collaborator.documents?.created_at,
+      liked: collaborator.liked,
+      owner: collaborator.owner,
+    };
+  });
 };
 
 export { getDocCollaborator };

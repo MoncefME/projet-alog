@@ -16,16 +16,16 @@ const likeDocument = async ({ document_id }: DocumentData) => {
   }
 
   const { data, error } = await supabase
-    .from("use_docs")
-    .update({
-      liked: true,
-    })
+    .from("user_docs")
+    .update({ liked: true })
+    .eq("user_id", user.data.user?.id)
     .eq("document_id", document_id)
-    .eq("user_id", user.data.user?.id);
+    .select();
 
+  console.log("edit data", data);
   if (error) {
-    throw new Error("Error creating document.");
-    return;
+    console.error("Error updating document:", error);
+    throw error;
   }
 
   return data;

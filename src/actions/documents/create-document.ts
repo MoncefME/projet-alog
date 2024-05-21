@@ -19,7 +19,6 @@ const createDocument = async ({ title }: DocumentData) => {
     .from("documents")
     .insert({
       title,
-      owner_id: user.user.id,
     })
     .select();
 
@@ -34,10 +33,8 @@ const createDocument = async ({ title }: DocumentData) => {
       document_id: id,
       user_id: user.user.id,
       liked: false,
+      owner: true,
     });
-
-  console.log("data_colabs", data_colabs);
-  console.log("error_colabs", error_colabs);
 
   if (error_colabs) {
     throw new Error("Error creating user-doc relationship.");
