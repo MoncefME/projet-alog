@@ -6,9 +6,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
-
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -22,47 +21,67 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Crown, Trash, UserCog, UserPlus, UsersRound } from "lucide-react";
-import { DialogDescription } from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
-import { getUsersDocuments } from "@/actions/documents";
-import { getDocCollaborator } from "@/actions/collaborators";
-
-interface UpdateDocDialogProps {
-  onUpdate: () => void;
-}
+import {
+  addCollaborator,
+  deleteCollaborator,
+  getDocCollaborator,
+} from "@/actions/collaborators";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const formSchema = z.object({
-  document_title: z.string().min(2).max(50),
+  collab_email: z.string().email(),
 });
 
-const CollaboratorsDialog = ({ onUpdate }: UpdateDocDialogProps) => {
-  const [collaborators, setCollaborators] = useState<any>([]);
+interface Collaborator {
+  document_id: string;
+  user_id: string;
+  owner: boolean;
+  email: string;
+  full_name: string;
+}
 
-  const fetchCollaborators = async () => {
-    const collaborators = await getDocCollaborator({
-      document_id: "1dd220df-6609-496a-a10b-15194866ffbd",
-    });
-    console.log(collaborators, "0000");
-    setCollaborators(collaborators);
-  };
-  useEffect(() => {
-    fetchCollaborators();
-    console.log("collaborators", collaborators);
-  }, []);
-
-  // const Collaborators = Array.from({ length: 20 }, (_, i) => ({
-  //   id: i + 1,
-  //   username: "Moncef",
-  //   email: "moncef@gmail.com",
-  //   role: i === 0 ? "Owner" : "Collaborator",
-  // }));
+const CollaboratorsDialog = ({ document_id }: { document_id: string }) => {
+  const router = useRouter();
+  const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      document_title: "",
+      collab_email: "",
     },
   });
+
+  const fetchCollaborators = async () => {
+    const collaborators = await getDocCollaborator({ document_id });
+    setCollaborators(collaborators || []);
+  };
+
+  const handleDeleteCollaborator = async (user_id: string) => {
+    await deleteCollaborator(document_id, user_id);
+    setCollaborators((prev) =>
+      prev.filter((collab) => collab.user_id !== user_id)
+    );
+  };
+
+  const handleAddCollaborator = async (email: string) => {
+    const newCollaborator = await addCollaborator({ document_id, email });
+    if (newCollaborator.success) {
+      setCollaborators((prev) => [...prev, newCollaborator.data]);
+    } else {
+      form.setError("collab_email", {
+        type: "manual",
+        message: newCollaborator.message,
+      });
+      console.log(newCollaborator.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchCollaborators();
+  }, [document_id]);
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -84,16 +103,19 @@ const CollaboratorsDialog = ({ onUpdate }: UpdateDocDialogProps) => {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onUpdate)}>
+          <form
+            onSubmit={form.handleSubmit((values) =>
+              handleAddCollaborator(values.collab_email)
+            )}
+          >
             <FormField
               control={form.control}
-              name="document_title"
+              name="collab_email"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormMessage />
-
-                  <div className="flex  items-center gap-2">
+                  <div className="flex items-center gap-2">
                     <FormControl>
                       <Input
                         placeholder="collab@email.com"
@@ -118,18 +140,20 @@ const CollaboratorsDialog = ({ onUpdate }: UpdateDocDialogProps) => {
             >
               <div className="col-span-2 flex items-center gap-2">
                 <Button variant={"ghost"} size={"sm"}>
-                  {collaborator.role === "Owner" ? (
-                    <Crown fill="yellow" />
-                  ) : (
-                    <UserCog />
-                  )}
+                  {collaborator.owner ? <Crown fill="yellow" /> : <UserCog />}
                 </Button>
                 <p>{collaborator.username}</p>
               </div>
               <div className="col-span-3">{collaborator.email}</div>
               <div className="col-span-1 flex items-center justify-center gap-2">
-                {collaborator.role !== "Owner" ? (
-                  <Button variant={"destructive"} size={"sm"}>
+                {!collaborator.owner ? (
+                  <Button
+                    variant={"destructive"}
+                    size={"sm"}
+                    onClick={() =>
+                      handleDeleteCollaborator(collaborator.user_id)
+                    }
+                  >
                     <Trash />
                   </Button>
                 ) : null}
@@ -143,7 +167,6 @@ const CollaboratorsDialog = ({ onUpdate }: UpdateDocDialogProps) => {
               Close
             </Button>
           </DialogClose>
-          <Button type="submit">Submit</Button>
         </div>
       </DialogContent>
     </Dialog>

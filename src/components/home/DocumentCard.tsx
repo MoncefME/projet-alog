@@ -2,16 +2,14 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-import { deleteDocument, likeDocument } from "@/actions/documents";
+import {
+  deleteDocument,
+  editDocument,
+  likeDocument,
+} from "@/actions/documents";
 import { formatDateAndTime } from "@/utils/format-date";
 
-import {
-  Clock,
-  Heart,
-  LucideStar,
-  MoveLeft,
-  MoveRightIcon,
-} from "lucide-react";
+import { Clock, Heart, MoveRightIcon } from "lucide-react";
 import { Button } from "../ui/button";
 
 import DeleteDocDialog from "./CardActions/DeleteDocDialog";
@@ -19,7 +17,16 @@ import UpdateDocDialog from "./CardActions/UpdateDocDialog";
 import CollaboratorsDialog from "./CardActions/CollaboratorsDialog";
 import { useState } from "react";
 
-const DocumentCard = ({ doc }: any) => {
+interface DocumentCardProps {
+  doc: {
+    document_id: string;
+    title: string;
+    created_at: string;
+    liked: boolean;
+  };
+}
+
+const DocumentCard = ({ doc }: DocumentCardProps) => {
   const router = useRouter();
   const [liked, setLiked] = useState(doc.liked);
 
@@ -29,18 +36,19 @@ const DocumentCard = ({ doc }: any) => {
   };
 
   const handleDocumentLike = async () => {
-    await likeDocument(doc.document_id);
+    setLiked(!liked);
+    const response = await likeDocument(doc.document_id);
     router.refresh();
   };
 
-  const handleDocumentEdit = async () => {
-    // await likeDocument(doc.documentId);
-    // router.refresh();
+  const handleDocumentEdit = async (new_title: string) => {
+    await editDocument(doc.document_id, new_title);
+    router.refresh();
   };
 
   return (
     <div
-      key={doc.documentId}
+      key={doc.document_id}
       className="col-span-1 flex h-44 flex-col justify-end truncate  rounded-md border-2 border-slate-700 bg-slate-100 p-0 hover:border-slate-800 hover:bg-white"
     >
       <Link
@@ -72,10 +80,10 @@ const DocumentCard = ({ doc }: any) => {
           {liked ? <Heart size={20} fill="red" /> : <Heart size={20} />}
         </Button>
         <UpdateDocDialog
-          onUpdate={handleDocumentEdit}
+          onUpdate={(new_title: string) => handleDocumentEdit(new_title)}
           current_title={doc.title}
         />
-        <CollaboratorsDialog onUpdate={handleDocumentEdit} />
+        <CollaboratorsDialog document_id={doc.document_id} />
       </div>
     </div>
   );

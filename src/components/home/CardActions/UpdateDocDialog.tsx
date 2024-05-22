@@ -24,10 +24,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { EditIcon, File } from "lucide-react";
+import { useState } from "react";
 
 interface UpdateDocDialogProps {
   current_title: string;
-  onUpdate: () => void;
+  onUpdate: (new_title: string) => Promise<void>;
 }
 
 const formSchema = z.object({
@@ -35,6 +36,9 @@ const formSchema = z.object({
 });
 
 const UpdateDocDialog = ({ current_title, onUpdate }: UpdateDocDialogProps) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,8 +46,18 @@ const UpdateDocDialog = ({ current_title, onUpdate }: UpdateDocDialogProps) => {
     },
   });
 
+  const handleFormSubmit = async (values: { document_title: string }) => {
+    setLoading(true);
+    try {
+      await onUpdate(values.document_title);
+      setIsDialogOpen(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         <Button
           variant="outline"
@@ -60,7 +74,10 @@ const UpdateDocDialog = ({ current_title, onUpdate }: UpdateDocDialogProps) => {
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onUpdate)} className="space-y-8">
+          <form
+            onSubmit={form.handleSubmit(handleFormSubmit)}
+            className="space-y-8"
+          >
             <FormField
               control={form.control}
               name="document_title"
@@ -80,7 +97,9 @@ const UpdateDocDialog = ({ current_title, onUpdate }: UpdateDocDialogProps) => {
                   Close
                 </Button>
               </DialogClose>
-              <Button type="submit">Submit</Button>
+              <Button type="submit">
+                {loading ? "Updating..." : "Update"}
+              </Button>
             </div>
           </form>
         </Form>

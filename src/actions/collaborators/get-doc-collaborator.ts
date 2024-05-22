@@ -19,29 +19,26 @@ const getDocCollaborator = async ({ document_id }: DocumentData) => {
     .from("user_docs")
     .select(
       `
-    user_id,
-    liked,
-    owner,
-    documents (
-      id,
-      created_at,
-      title
+      document_id,
+      user_id,
+      owner,
+      profiles: user_id (email, full_name)
+      `
     )
-  `
-    )
-    .eq("document_id", document_id);
+    .order("owner", { ascending: false });
 
   if (error_collaborators) {
-    throw new Error("Error getting collaborators.");
+    console.error("Error getting collaborators:", error_collaborators);
+    // throw new Error("Error getting collaborators.");
   }
 
-  return collaborators.map((collaborator) => {
+  return collaborators?.map((collaborator: any) => {
     return {
-      documentId: collaborator.documents?.id,
-      title: collaborator.documents?.title,
-      createdAt: collaborator.documents?.created_at,
-      liked: collaborator.liked,
+      document_id: collaborator.document_id,
+      user_id: collaborator.user_id,
       owner: collaborator.owner,
+      email: collaborator.profiles.email,
+      full_name: collaborator.profiles.full_name,
     };
   });
 };

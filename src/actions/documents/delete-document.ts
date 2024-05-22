@@ -2,13 +2,13 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-const deleteDocument = async (id: string) => {
+const deleteDocument = async (document_id: string) => {
   const supabase = createClient();
 
   const { data, error } = await supabase
     .from("documents")
     .delete()
-    .eq("id", id);
+    .eq("id", document_id);
 
   if (error) {
     console.error(error);

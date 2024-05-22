@@ -2,11 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-interface DocumentData {
-  document_id: string;
-}
-
-const likeDocument = async ({ document_id }: DocumentData) => {
+const likeDocument = async (document_id: string) => {
   const supabase = createClient();
 
   const user = await supabase.auth.getUser();
@@ -15,14 +11,20 @@ const likeDocument = async ({ document_id }: DocumentData) => {
     throw new Error("User not found.");
   }
 
+  const { data: data_1, error: error_1 } = await supabase
+    .from("user_docs")
+    .select("liked")
+    .eq("document_id", document_id)
+    .eq("user_id", user.data.user?.id);
+
+  const newLikedStatus = data_1 ? !data_1[0]?.liked : true;
   const { data, error } = await supabase
     .from("user_docs")
-    .update({ liked: true })
-    .eq("user_id", user.data.user?.id)
+    .update({ liked: newLikedStatus })
     .eq("document_id", document_id)
+    .eq("user_id", user.data.user?.id)
     .select();
 
-  console.log("edit data", data);
   if (error) {
     console.error("Error updating document:", error);
     throw error;
