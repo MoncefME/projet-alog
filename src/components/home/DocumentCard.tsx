@@ -52,7 +52,7 @@ const DocumentCard = ({ doc }: DocumentCardProps) => {
       className="col-span-1 flex size-44 flex-col justify-end truncate  rounded-md border-2 border-slate-700 bg-slate-100 p-0 hover:border-slate-800 hover:bg-white"
     >
       <Link
-        href={`/editor?documentId=${doc.document_id}`}
+        href={`/editor/${doc.document_id}`}
         className="px-1 text-xl"
         target="_blank"
       >

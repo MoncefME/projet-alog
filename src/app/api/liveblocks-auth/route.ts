@@ -21,11 +21,10 @@ export async function POST(request: NextRequest) {
     .eq("id", userId)
     .single();
 
-  const session = liveblocks.prepareSession(`user-${1}`, {
+  const session = liveblocks.prepareSession(`user-${data.id}`, {
     userInfo: {
       name: data?.full_name,
-      picture:
-        data?.avatar_url || "https://avatars.githubusercontent.com/MoncefME",
+      picture: "https://avatars.githubusercontent.com/MoncefME",
       color: "#85EED6",
     },
   });
