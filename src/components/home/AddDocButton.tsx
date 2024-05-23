@@ -39,7 +39,7 @@ const AddDocButton = () => {
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         <Button
-          className="group col-span-1 flex h-44 flex-col items-center justify-center gap-2 bg-gradient-to-tr from-slate-900 via-slate-700 to-slate-700"
+          className="group col-span-1 flex size-44 flex-col items-center justify-center gap-2 bg-gradient-to-tr from-slate-900 via-slate-700 to-slate-700"
           onClick={() => setIsDialogOpen(true)}
         >
           <p className="text-lg font-bold">Add document</p>

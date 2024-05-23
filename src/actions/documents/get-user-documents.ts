@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { QueryData } from "@supabase/supabase-js";
 
 const getUsersDocuments = async () => {
   const supabase = createClient();
@@ -26,7 +25,8 @@ const getUsersDocuments = async () => {
     )
   `
     )
-    .eq("user_id", user.data.user?.id);
+    .eq("user_id", user.data.user?.id)
+    .order("created_at", { referencedTable: "documents", ascending: true });
 
   if (error) {
     throw error;

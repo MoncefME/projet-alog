@@ -2,10 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-const checkAccess = async (
-  userId: string,
-  documentId: string
-): Promise<Boolean> => {
+const checkAccess = async (userId: string, documentId: string) => {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -15,11 +12,11 @@ const checkAccess = async (
     .eq("user_id", userId);
 
   if (error) {
-    throw new Error("Error fetching document.");
+    return false;
   }
 
   if (!data) {
-    throw new Error("Document not found.");
+    return false;
   }
 
   return data.length > 0;

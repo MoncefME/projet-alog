@@ -132,7 +132,7 @@ const CollaboratorsDialog = ({ document_id }: { document_id: string }) => {
             />
           </form>
         </Form>
-        <div className="no-scrollbar flex h-44 w-full snap-y snap-mandatory flex-col gap-2 overflow-y-scroll">
+        <div className="no-scrollbar flex max-h-44 w-full snap-y snap-mandatory flex-col gap-2 overflow-y-scroll">
           {collaborators.map((collaborator: any, index: any) => (
             <div
               key={index}

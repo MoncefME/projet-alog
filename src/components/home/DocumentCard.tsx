@@ -49,11 +49,12 @@ const DocumentCard = ({ doc }: DocumentCardProps) => {
   return (
     <div
       key={doc.document_id}
-      className="col-span-1 flex h-44 flex-col justify-end truncate  rounded-md border-2 border-slate-700 bg-slate-100 p-0 hover:border-slate-800 hover:bg-white"
+      className="col-span-1 flex size-44 flex-col justify-end truncate  rounded-md border-2 border-slate-700 bg-slate-100 p-0 hover:border-slate-800 hover:bg-white"
     >
       <Link
-        href={`/editor?exampleId=${doc.document_id}`}
+        href={`/editor?documentId=${doc.document_id}`}
         className="px-1 text-xl"
+        target="_blank"
       >
         <p className="group flex items-center truncate text-wrap transition-all duration-300 hover:pl-1">
           <MoveRightIcon
@@ -77,7 +78,7 @@ const DocumentCard = ({ doc }: DocumentCardProps) => {
           className="flex size-8 items-center justify-center p-0 "
           onClick={handleDocumentLike}
         >
-          {liked ? <Heart size={20} fill="red" /> : <Heart size={20} />}
+          {liked ? <Heart size={20} fill="black" /> : <Heart size={20} />}
         </Button>
         <UpdateDocDialog
           onUpdate={(new_title: string) => handleDocumentEdit(new_title)}

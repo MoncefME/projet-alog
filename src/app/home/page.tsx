@@ -15,7 +15,7 @@ const HomePage = async () => {
         </div>
       </div>
 
-      <div className="grid w-full grid-cols-4 gap-4 ">
+      <div className="grid w-full grid-cols-1 place-content-center place-items-center gap-4  sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
         <AddDocButton />
         {user_documents &&
           user_documents.map((doc) => (

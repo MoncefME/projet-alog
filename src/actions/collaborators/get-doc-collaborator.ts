@@ -25,6 +25,7 @@ const getDocCollaborator = async ({ document_id }: DocumentData) => {
       profiles: user_id (email, full_name)
       `
     )
+    .eq("document_id", document_id)
     .order("owner", { ascending: false });
 
   if (error_collaborators) {

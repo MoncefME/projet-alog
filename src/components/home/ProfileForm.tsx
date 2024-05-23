@@ -130,9 +130,7 @@ const ProfileForm = ({ user }: { user: User | null }) => {
     <Dialog>
       <DialogTrigger asChild>
         <Avatar className="size-12 cursor-pointer">
-          <AvatarImage
-            src={"https://avatars.githubusercontent.com/mrdbourke"}
-          />
+          <AvatarImage src={"https://avatars.githubusercontent.com/MoncefME"} />
           <AvatarFallback>MM</AvatarFallback>
         </Avatar>
       </DialogTrigger>
