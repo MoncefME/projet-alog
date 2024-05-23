@@ -1,5 +1,8 @@
 import { Editor } from "@tiptap/react";
 import styles from "./Toolbar.module.css";
+import { Button } from "../ui/button";
+import Link from "next/link";
+import { HomeIcon } from "lucide-react";
 
 type Props = {
   editor: Editor | null;
@@ -12,6 +15,11 @@ export function Toolbar({ editor }: Props) {
 
   return (
     <div className={styles.toolbar}>
+      <Button className="mr-6 size-8">
+        <Link href={"/home"}>
+          <HomeIcon />
+        </Link>
+      </Button>
       <button
         className={styles.button}
         onClick={() => editor.chain().focus().toggleBold().run()}

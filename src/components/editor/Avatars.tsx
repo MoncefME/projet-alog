@@ -1,11 +1,12 @@
 import { useOthers, useSelf } from "@/liveblocks.config";
+import styles from "./Avatars.module.css";
 
 export function Avatars() {
   const users = useOthers();
   const currentUser = useSelf();
 
   return (
-    <div className="flex px-3">
+    <div className={styles.avatars}>
       {users.map(({ connectionId, info }) => {
         return (
           <Avatar key={connectionId} picture={info.picture} name={info.name} />
@@ -13,7 +14,7 @@ export function Avatars() {
       })}
 
       {currentUser && (
-        <div className="relative ml-4 first:ml-0">
+        <div className="relative ml-8 first:ml-0">
           <Avatar
             picture={currentUser.info.picture}
             name={currentUser.info.name}
@@ -26,8 +27,12 @@ export function Avatars() {
 
 export function Avatar({ picture, name }: { picture: string; name: string }) {
   return (
-    <div className="relative flex justify-center items-center border-4 border-white rounded-full w-10 h-10 bg-gray-400 -ml-3">
-      <img src={picture} alt={name} className="w-full h-full rounded-full" />
+    <div className={styles.avatar} data-tooltip={name}>
+      <img
+        src={picture}
+        className={styles.avatar_picture}
+        data-tooltip={name}
+      />
     </div>
   );
 }
