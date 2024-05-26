@@ -22,7 +22,7 @@ const Navbar = async () => {
     <nav className="flex h-20 w-full items-center justify-between border-b-4 border-b-slate-600 bg-slate-800 px-20 py-2  text-white">
       <div className="flex items-center space-x-4">
         <Image src="/logo.png" alt="Terra App" width={45} height={45} />
-        <p className="text-2xl font-bold">Terra App</p>
+        <p className="hidden text-2xl font-bold md:block lg:block">Terra App</p>
       </div>
       <div className="flex items-center space-x-4">
         {user ? (
@@ -32,18 +32,11 @@ const Navbar = async () => {
               type="submit"
               className="flex items-center gap-4 text-base"
             >
-              Logout
+              <p className="hidden lg:block">Logout</p>
               <LogOut />
             </Button>
           </form>
-        ) : (
-          <Button variant="default">
-            <Link href="/login" className="flex items-center gap-4 text-base">
-              Login
-              <LogIn />
-            </Link>
-          </Button>
-        )}
+        ) : null}
         {user && <ProfileForm user={user} />}
       </div>
     </nav>

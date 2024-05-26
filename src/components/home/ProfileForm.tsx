@@ -29,15 +29,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import AratarPicture from "./AvatarPicture";
+import updateProfile from "@/actions/auth/update-profile";
 
 const formSchema = z.object({
   full_name: z.string().min(2).max(50),
-  avatar_link: z.string().url().optional(),
 });
 
 const ProfileForm = ({ user }: { user: User | null }) => {
   const supabase = createClient();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [fullname, setFullname] = useState<string | null>(null);
+
   const fetchUser = async () => {
     const { data, error } = await supabase
       .from("profiles")
@@ -49,26 +52,25 @@ const ProfileForm = ({ user }: { user: User | null }) => {
       return;
     }
     console.log("user fetched data", data);
+    return data;
   };
   useEffect(() => {
     fetchUser();
   }, []);
 
-  const [loading, setLoading] = useState(true);
-  const [fullname, setFullname] = useState<string | null>(null);
-  const [avatar_url, setAvatarUrl] = useState<string | null>(null);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      full_name: "",
-      avatar_link: "",
+      full_name: fullname || "",
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const { full_name, avatar_link } = values;
-    updateProfile({ full_name: fullname, avatar_url: avatar_link ?? null });
+    const { full_name } = values;
+    setLoading(true);
+    updateProfile({ full_name });
+    setLoading(false);
+    setIsDialogOpen(false);
   }
 
   const getProfile = useCallback(async () => {
@@ -77,7 +79,7 @@ const ProfileForm = ({ user }: { user: User | null }) => {
 
       const { data, error, status } = await supabase
         .from("profiles")
-        .select(`full_name, email ,avatar_url`)
+        .select(`full_name, email`)
         .eq("id", user?.id)
         .single();
 
@@ -88,7 +90,6 @@ const ProfileForm = ({ user }: { user: User | null }) => {
 
       if (data) {
         setFullname(data.full_name);
-        setAvatarUrl(data.avatar_url);
       }
     } catch (error) {
       alert("Error loading user data!");
@@ -101,56 +102,20 @@ const ProfileForm = ({ user }: { user: User | null }) => {
     getProfile();
   }, [user, getProfile]);
 
-  const updateProfile = async ({
-    full_name,
-    avatar_url,
-  }: {
-    full_name: string | null;
-    avatar_url: string | null;
-  }) => {
-    try {
-      setLoading(true);
-
-      const { error } = await supabase.from("profiles").upsert({
-        id: user?.id as string,
-        full_name,
-        avatar_url,
-        updated_at: new Date().toISOString(),
-      });
-      if (error) throw error;
-      alert("Profile updated!");
-    } catch (error) {
-      alert("Error updating the data!");
-    } finally {
-      setLoading(false);
-    }
-  };
-  console.log("avatar_url", avatar_url);
   return (
-    <Dialog>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         <Avatar className="size-12 cursor-pointer">
-          <AvatarImage src={"https://avatars.githubusercontent.com/MoncefME"} />
+          <AvatarImage src={"https://github.com/identicons/jasonlong.png"} />
           <AvatarFallback>MM</AvatarFallback>
         </Avatar>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Profile</DialogTitle>
+          <DialogTitle>Edit {fullname} Profile</DialogTitle>
           <DialogDescription>Update your profile information</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <div className="flex w-full justify-between space-x-4 bg-yellow-100">
-            <AratarPicture
-              uid={user?.id ?? null}
-              url={avatar_url}
-              size={150}
-              onUpload={(url) => {
-                setAvatarUrl(url);
-                updateProfile({ full_name: fullname, avatar_url: url });
-              }}
-            />
-          </div>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
@@ -174,7 +139,9 @@ const ProfileForm = ({ user }: { user: User | null }) => {
                   Close
                 </Button>
               </DialogClose>
-              <Button type="submit">Submit</Button>
+              <Button type="submit">
+                {loading ? "Updating..." : "Update"}
+              </Button>
             </div>
           </form>
         </Form>

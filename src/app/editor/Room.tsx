@@ -26,18 +26,3 @@ export function Room({
     </RoomProvider>
   );
 }
-
-/**
- * This function is used when deploying an example on liveblocks.io.
- * You can ignore it completely if you run the example locally.
- */
-// function useExampleRoomId(roomId: string) {
-//   const params = useSearchParams();
-//   const exampleId = params?.get("documentId");
-
-//   const exampleRoomId = useMemo(() => {
-//     return exampleId ? `${roomId}-${exampleId}` : roomId;
-//   }, [roomId, exampleId]);
-
-//   return exampleRoomId;
-// }
